@@ -23,7 +23,8 @@ def download_posts():
         download_pictures=True,
         download_videos=False,
         download_video_thumbnails=False,
-        save_metadata=False
+        save_metadata=False,
+        filename_pattern="{shortcode}"
     )
 
     # Create posts directory
@@ -204,4 +205,4 @@ if __name__ == "__main__":
     downloaded_posts = download_posts()
 
     # Create posts with the downloaded images
-    new_posts = create_post(downloaded_posts)
+    # new_posts = create_post(downloaded_posts)
