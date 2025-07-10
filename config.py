@@ -1,9 +1,8 @@
 # config.py
 
-SOURCE_USERNAME = 'source_account'
-TARGET_USERNAME = 'secondary_account'
-TARGET_PASSWORD = 'your_password'
-TARGET_LANG = 'ro'
+SOURCE_USERNAME = 'liviumailer'
+TARGET_USERNAME = 'motivated.mindset'
 
-IMAGE_DIR = 'downloaded_posts/'
-PROCESSED_LOG = 'processed_log.json'
+DEVELOPER_PROMPT = 'You are a helpful translator assistant. ' \
+'Respond only with the translated text. ' \
+'Try to have as many words as the original text.'
