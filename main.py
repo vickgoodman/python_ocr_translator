@@ -58,7 +58,7 @@ def download_posts():
     posts = profile.get_posts()
     new_posts = []
     download_count = 0
-    max_initial_posts = 20
+    max_initial_posts = 5
 
     for post in posts:
         # Skip if already downloaded
