@@ -8,7 +8,8 @@ from config import SOURCE_USERNAME, TARGET_USERNAME, DEVELOPER_PROMPT
 import pytesseract
 from PIL import Image, ImageDraw, ImageFont
 from openai import OpenAI
-from pathlib import Path
+import psutil
+import shutil
 
 
 def download_posts():
@@ -58,7 +59,7 @@ def download_posts():
     posts = profile.get_posts()
     new_posts = []
     download_count = 0
-    max_initial_posts = 5
+    max_initial_posts = 20
 
     for post in posts:
         # Skip if already downloaded
@@ -133,76 +134,114 @@ def wrap_text(text, font, max_width, draw):
     return lines
 
 
-def create_post():
-    image_path = "/home/goodman/acs/projects/python_ocr_translator/test2.jpg"
+def create_posts(downloaded_posts):
+    # Create new posts directory
+    NEW_POSTS_DIR = "new_posts"
+    os.makedirs(NEW_POSTS_DIR, exist_ok=True)
 
-    # Load the image file
-    img = Image.open(image_path)
+    for post in downloaded_posts:
+        print(f"Creating post for: {post['shortcode']}")
+        image_path = "downloaded_posts/" + post['shortcode'] + '.jpg'
 
-    # Use pytesseract to extract text from the image
-    text = pytesseract.image_to_string(img, lang='eng')
+        # Load the image file
+        img = Image.open(image_path)
 
-    prompt = "traduce coerent in romana:\"" + text + "\""
+        # Use pytesseract to extract text from the image
+        text = pytesseract.image_to_string(img, lang='eng')
 
-    # Translate the text to a different language (coherently, with AI)
-    client = OpenAI()
+        prompt = "traduce coerent in română:\"" + text + "\""
 
-    completion = client.chat.completions.create(
-        model="gpt-4.1",
-        messages=[
-            {"role": "developer", "content": DEVELOPER_PROMPT},
-            {"role": "user", "content": prompt}
-        ]
-    )
+        # Translate the text to a different language (coherently, with AI)
+        client = OpenAI()
 
-    translated_text = completion.choices[0].message.content
+        completion = client.chat.completions.create(
+            model="gpt-4.1",
+            messages=[
+                {"role": "developer", "content": DEVELOPER_PROMPT},
+                {"role": "user", "content": prompt}
+            ]
+        )
 
-    # Print text
-    print('Original text:\n', text)
-    print('Translated text:\n', translated_text)
+        translated_text = completion.choices[0].message.content
 
-    # Place text on square(1080x1080) black image
-    # Open Image
-    img = Image.open('black_square.png')
+        # Place text on square(1080x1080) black image
+        # Open Image
+        img = Image.open('black_square.png')
 
-    # Call draw Method to add 2D graphics in an image
-    draw = ImageDraw.Draw(img)
+        # Call draw Method to add 2D graphics in an image
+        draw = ImageDraw.Draw(img)
 
-    # Custom font style and font size
-    font = ImageFont.truetype('FreeMono.ttf', 30)
+        # Custom font style and font size
+        font = ImageFont.truetype('FreeMono.ttf', 30)
 
-    max_width = 780 # Width for the text box
+        # Width for the text box
+        max_width = 780
 
-    # Wrap text into lines
-    wrapped_lines = wrap_text(translated_text, font, max_width, draw)
+        # Wrap text into lines
+        wrapped_lines = wrap_text(translated_text, font, max_width, draw)
 
-    # Calculate positions
-    x, y = 150, 450  # Starting position for the text box
-    end_x, end_y = x + max_width, y + (24 * int(len(wrapped_lines))) # Ending position for the text box
+        # Calculate positions
+        x, y = 150, 450  # Starting position for the text box
+        end_x, end_y = x + max_width, y + (24 * int(len(wrapped_lines))) # Ending position for the text box
 
-    # Dimensions for the background box
-    background_box = [(x, y), (end_x, end_y)]
+        # Dimensions for the background box
+        background_box = [(x, y), (end_x, end_y)]
 
-    # Draw background box
-    draw.rectangle(background_box, fill="black")
+        # Draw background box
+        draw.rectangle(background_box, fill="black")
 
-    description = ""
-    for line in wrapped_lines:
-        description += line + "\n"
+        description = ""
+        for line in wrapped_lines:
+            description += line + "\n"
 
-    # Draw multiline text.
-    draw.multiline_text((x, y), description, font=font, fill="white", spacing=6)
+        # Draw multiline text.
+        draw.multiline_text((x, y), description, font=font, fill="white", spacing=6)
 
-    # Display edited image
-    img.show()
+        # Show the image for validation
+        img.show()
 
-    # Save edited image
-    # img.save('')
+        # Validation prompt
+        print(f"\n--- Post Validation for {post['shortcode']} ---")
+        print("Original text:", text)
+        print("Translated text:", translated_text)
+
+        while True:
+            user_choice = input("\nDo you want to save this post? (y/n/q to quit): ").lower().strip()
+
+            if user_choice in ['y', 'yes']:
+                # Save the post
+                img.save("new_posts/" + post['shortcode'] + '.png')
+                print(f"✅ Post saved: {post['shortcode']}.png")
+                break
+            elif user_choice in ['n', 'no']:
+                # Skip post
+                print(f"❌ Post skipped: {post['shortcode']}")
+                break
+            elif user_choice in ['q', 'quit']:
+                print("Exiting post creation...")
+                return
+            else:
+                print("Please enter 'y' for yes, 'n' for no, or 'q' to quit.")
+
+        # Close images by PID
+        for proc in psutil.process_iter():
+            if proc.name() == r"display-im6.q16":
+                proc.kill()
+
+        print("-" * 50)
 
 
 if __name__ == "__main__":
+    # Clean up old directories and files for testing
+    # os.remove('downloaded_posts.json') if os.path.exists('downloaded_posts.json') else None
+    # shutil.rmtree('downloaded_posts', ignore_errors=True)
+    # shutil.rmtree('new_posts', ignore_errors=True)
+
     # Download posts from Instagram
     downloaded_posts = download_posts()
 
     # Create posts with the downloaded images
-    # new_posts = create_post(downloaded_posts)
+    if downloaded_posts:
+        create_posts(downloaded_posts)
+    else:
+        print("No new posts to create.")
