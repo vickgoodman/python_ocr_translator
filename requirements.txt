@@ -5,3 +5,5 @@ instaloader
 instabot
 tensorflow
 pytesseract
+psutil
+openai

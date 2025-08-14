@@ -2,8 +2,9 @@
 import os
 import shutil
 
-from create_posts import create_posts
 from download_posts import download_posts
+from create_posts import create_posts
+from schedule_posts import schedule_posts
 
 # Clean up old directories and files for testing
 os.remove('downloaded_posts.json') if os.path.exists('downloaded_posts.json') else None

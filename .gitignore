@@ -4,3 +4,5 @@ __pycache__
 downloaded_posts/
 downloaded_posts.json
 new_posts/
+.github/
+tmp/
