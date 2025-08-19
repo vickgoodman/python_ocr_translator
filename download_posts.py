@@ -30,11 +30,13 @@ def download_posts():
     try:
         with open(TRACKING_FILE, 'r') as f:
             tracking_data = json.load(f)
-            downloaded_posts = set(tracking_data.get('downloaded_posts', []))
+            downloaded_posts = set(tracking_data.get('shortcodes', []))
             last_check = tracking_data.get('last_check')
+            total_downloaded = tracking_data.get('total_downloaded', 0)
     except FileNotFoundError:
         downloaded_posts = set()
         last_check = None
+        total_downloaded = 0
         print("First run - will download latest 20 posts")
 
     # Login
@@ -54,7 +56,7 @@ def download_posts():
     posts = profile.get_posts()
     new_posts = []
     download_count = 0
-    max_initial_posts = 3
+    max_initial_posts = 5
 
     for post in posts:
         # Skip if already downloaded
@@ -96,9 +98,9 @@ def download_posts():
 
     # Update tracking file
     tracking_data = {
-        'downloaded_posts': list(downloaded_posts),
+        'shortcodes': list(downloaded_posts),
         'last_check': datetime.now().isoformat(),
-        'total_downloaded': len(downloaded_posts)
+        'total_downloaded': total_downloaded + len(new_posts)  # Only increment by new downloads
     }
 
     with open(TRACKING_FILE, 'w') as f:
