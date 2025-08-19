@@ -45,22 +45,38 @@ def create_posts(downloaded_posts):
         img = Image.open(image_path)
 
         # Use pytesseract to extract text from the image
-        text = pytesseract.image_to_string(img, lang='eng')
+        post_text = pytesseract.image_to_string(img, lang='eng')
 
-        prompt = "traduce coerent in română:\"" + text + "\""
+        # Read the caption text from the corresponding text file
+        with open("downloaded_posts/" + post['shortcode'] + '.txt', 'r') as f:
+            caption_text = f.read()
 
-        # Translate the text to a different language (coherently, with AI)
+        # Create prompts for translation
+        post_prompt = "Traduce coerent in română:\" " + post_text + "\""
+        caption_prompt = "Traduce coerent in română:\" " + caption_text + "\". Nu tradu cuvintele care încep cu '#' și lasă-le neatinse."
+
+        # Translate the post text and caption to a different language (coherently, with AI)
         client = OpenAI()
 
-        completion = client.chat.completions.create(
+        post_completion = client.chat.completions.create(
             model="gpt-4.1",
             messages=[
                 {"role": "developer", "content": DEVELOPER_PROMPT},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": post_prompt}
             ]
         )
 
-        translated_text = completion.choices[0].message.content
+        translated_post_text = post_completion.choices[0].message.content
+
+        caption_completion = client.chat.completions.create(
+            model="gpt-4.1",
+            messages=[
+                {"role": "developer", "content": DEVELOPER_PROMPT},
+                {"role": "user", "content": caption_prompt}
+            ]
+        )
+
+        translated_caption_text = caption_completion.choices[0].message.content
 
         # Place text on square(1080x1080) black image
         # Open Image
@@ -70,17 +86,18 @@ def create_posts(downloaded_posts):
         draw = ImageDraw.Draw(img)
 
         # Custom font style and font size
-        font = ImageFont.truetype('FreeMono.ttf', 30)
+        font = ImageFont.truetype('Lato-Light.ttf', 45)
 
         # Width for the text box
         max_width = 780
 
         # Wrap text into lines
-        wrapped_lines = wrap_text(translated_text, font, max_width, draw)
+        wrapped_lines = wrap_text(translated_post_text, font, max_width, draw)
 
-        # Calculate positions
-        x, y = 150, 450  # Starting position for the text box
-        end_x, end_y = x + max_width, y + (24 * int(len(wrapped_lines))) # Ending position for the text box
+        # Starting position for the text box
+        x = 150
+        y = 540 - 55 * int(len(wrapped_lines)) // 2 # A line occupies around 55 pixels
+        end_x, end_y = x + max_width, 930 # Ending position for the text box
 
         # Dimensions for the background box
         background_box = [(x, y), (end_x, end_y)]
@@ -93,15 +110,14 @@ def create_posts(downloaded_posts):
             description += line + "\n"
 
         # Draw multiline text.
-        draw.multiline_text((x, y), description, font=font, fill="white", spacing=6)
+        draw.multiline_text((x, y), description, font=font, fill="white", spacing=4)
 
         # Show the image for validation
         img.show()
 
         # Validation prompt
         print(f"\n--- Post Validation for {post['shortcode']} ---")
-        print("Original text:", text)
-        print("Translated text:", translated_text)
+        print("Original text:", post_text)
 
         while True:
             user_choice = input("\nDo you want to save this post? (y/n/q to quit): ").lower().strip()
@@ -109,6 +125,11 @@ def create_posts(downloaded_posts):
             if user_choice in ['y', 'yes']:
                 # Save the post
                 img.save("new_posts/" + post['shortcode'] + '.png')
+
+                # Save caption
+                with open("new_posts/" + post['shortcode'] + '.txt', 'w') as f:
+                    f.write(translated_caption_text)
+
                 print(f"✅ Post saved: {post['shortcode']}.png")
                 break
             elif user_choice in ['n', 'no']:
@@ -125,5 +146,6 @@ def create_posts(downloaded_posts):
         for proc in psutil.process_iter():
             if proc.name() == r"display-im6.q16":
                 proc.kill()
+                break
 
         print("-" * 50)
