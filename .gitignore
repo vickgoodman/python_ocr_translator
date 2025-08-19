@@ -1,4 +1,4 @@
-*env*
+*venv*
 __pycache__
 615_import*
 downloaded_posts/
@@ -6,3 +6,5 @@ downloaded_posts.json
 new_posts/
 .github/
 tmp/
+.env
+session.json

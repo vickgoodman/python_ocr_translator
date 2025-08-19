@@ -2,8 +2,9 @@ keras-ocr
 opencv-python
 Pillow
 instaloader
-instabot
 tensorflow
 pytesseract
 psutil
 openai
+instagrapi
+python-dotenv
