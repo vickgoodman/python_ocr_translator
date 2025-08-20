@@ -13,4 +13,5 @@ jobs:
     steps:
       - name: Run script
         run: |
+          sudo chmod +x ./run_main.sh
           ./run_main.sh
