@@ -5,6 +5,7 @@ import time
 import random
 import instaloader
 from datetime import datetime
+from dotenv import load_dotenv
 from config import SOURCE_USERNAME, TARGET_USERNAME
 
 def download_posts():
@@ -45,7 +46,10 @@ def download_posts():
         print("Loaded existing session")
     except FileNotFoundError:
         print("No existing session found, logging in...")
-        L.interactive_login(SOURCE_USERNAME)
+
+        source_password = os.getenv('SOURCE_PASSWORD')
+        L.login(SOURCE_USERNAME, source_password)
+
         print("Login successful, session saved")
 
     # Get profile

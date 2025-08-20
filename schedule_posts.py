@@ -26,6 +26,10 @@ def login_insta():
 
 def schedule_post():
     cl = login_insta()
+
+    # Create scheduled posts directory
+    os.makedirs("scheduled_posts", exist_ok=True)
+
     with open("downloaded_posts.json", "r") as f:
         data = json.load(f)
         shortcodes = data["shortcodes"]
@@ -66,4 +70,6 @@ def schedule_post():
     with open("downloaded_posts.json", "w") as f:
         json.dump(data, f, indent=2)
 
-schedule_post()
+cl = login_insta()
+print("This is a test.")
+# schedule_post()
