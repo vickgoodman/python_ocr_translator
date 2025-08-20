@@ -8,3 +8,4 @@ psutil
 openai
 instagrapi
 python-dotenv
+browser-cookie3

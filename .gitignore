@@ -4,7 +4,7 @@ __pycache__
 downloaded_posts/
 downloaded_posts.json
 new_posts/
-.github/
+scheduled_posts/
 tmp/
 .env
 session.json
