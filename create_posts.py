@@ -1,10 +1,20 @@
 # Create posts from downloaded posts
 import os
-import psutil
 import pytesseract
 from openai import OpenAI
 from config import DEVELOPER_PROMPT
 from PIL import Image, ImageDraw, ImageFont
+
+
+def is_mostly_black(image_path, threshold=30, ratio=0.9):
+    img = Image.open(image_path).convert("L")  # Convert to grayscale
+    pixels = list(img.getdata())
+
+    dark_pixels = sum(p < threshold for p in pixels)
+    total_pixels = len(pixels)
+
+    return dark_pixels / total_pixels >= ratio
+
 
 def wrap_text(text, font, max_width, draw):
     """
@@ -112,40 +122,12 @@ def create_posts(downloaded_posts):
         # Draw multiline text.
         draw.multiline_text((x, y), description, font=font, fill="white", spacing=4)
 
-        # Show the image for validation
-        img.show()
+        if is_mostly_black(image_path):
+            # Save the post
+            img.save("new_posts/" + post['shortcode'] + '.png')
+            # Save caption
+            with open("new_posts/" + post['shortcode'] + '.txt', 'w') as f:
+                f.write(translated_caption_text)
 
-        # Validation prompt
-        print(f"\n--- Post Validation for {post['shortcode']} ---")
-        print("Original text:", post_text)
-
-        while True:
-            user_choice = input("\nDo you want to save this post? (y/n/q to quit): ").lower().strip()
-
-            if user_choice in ['y', 'yes']:
-                # Save the post
-                img.save("new_posts/" + post['shortcode'] + '.png')
-
-                # Save caption
-                with open("new_posts/" + post['shortcode'] + '.txt', 'w') as f:
-                    f.write(translated_caption_text)
-
-                print(f"✅ Post saved: {post['shortcode']}.png")
-                break
-            elif user_choice in ['n', 'no']:
-                # Skip post
-                print(f"❌ Post skipped: {post['shortcode']}")
-                break
-            elif user_choice in ['q', 'quit']:
-                print("Exiting post creation...")
-                return
-            else:
-                print("Please enter 'y' for yes, 'n' for no, or 'q' to quit.")
-
-        # Close images by PID
-        for proc in psutil.process_iter():
-            if proc.name() == r"display-im6.q16":
-                proc.kill()
-                break
-
+        print(f"Created post for {post['shortcode']}")
         print("-" * 50)

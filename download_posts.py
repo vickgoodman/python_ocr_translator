@@ -52,10 +52,13 @@ def download_posts():
 
         print("Login successful, session saved")
 
+    print("-" * 50)
+
     # Get profile
     profile = instaloader.Profile.from_username(L.context, TARGET_USERNAME)
     print(f"Profile: {profile.username}, Posts: {profile.mediacount}")
 
+    print("-" * 50)
     # Get posts
     posts = profile.get_posts()
     new_posts = []
@@ -99,6 +102,7 @@ def download_posts():
         except Exception as e:
             print(f"Error downloading {post.shortcode}: {e}")
             continue
+        print("-" * 50)
 
     # Update tracking file
     tracking_data = {
@@ -111,4 +115,5 @@ def download_posts():
         json.dump(tracking_data, f, indent=2)
 
     print(f"Downloaded {len(new_posts)} new posts")
+    print("-" * 50)
     return new_posts
