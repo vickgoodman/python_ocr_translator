@@ -1,10 +1,11 @@
-# Schedule posts on Instagram
+# Upload post on Instagram
 
 import os
 import json
 from instagrapi import Client
 from dotenv import load_dotenv
 from config import SOURCE_USERNAME
+
 
 def login_insta():
     load_dotenv()
@@ -24,29 +25,32 @@ def login_insta():
 
     return cl
 
-def schedule_post():
+
+def upload_post():
     cl = login_insta()
 
-    # Create scheduled posts directory
-    os.makedirs("scheduled_posts", exist_ok=True)
-
+    # Load downloaded posts
     with open("downloaded_posts.json", "r") as f:
         data = json.load(f)
         shortcodes = data["shortcodes"]
 
+    # Get the first shortcode
     if shortcodes:
         shortcode = shortcodes[0]
     else:
         # Exit function
-        print("No post to schedule.")
+        print("No post to upload.")
         return
 
-    # Schedule each post
-    print(f"Scheduling post for: {shortcode}")
+    # Upload post
+    print(f"Posting for: {shortcode}")
+    print("-" * 50)
 
-    img_path = "new_posts/" + shortcode + '.png'
-    caption_path = "new_posts/" + shortcode + '.txt'
+    # Get image and caption paths
+    img_path = "created_posts/" + shortcode + '.png'
+    caption_path = "created_posts/" + shortcode + '.txt'
 
+    # Get caption text
     with open(caption_path, "r") as f:
         caption_text = f.read()
 
@@ -56,19 +60,25 @@ def schedule_post():
         caption=caption_text
     )
 
+    print("Removing files...")
+    print("-" * 50)
     # Remove from downloaded_posts
-    os.remove("downloaded_posts/" + shortcode + '.png')
+    os.remove("downloaded_posts/" + shortcode + '.jpg')
     os.remove("downloaded_posts/" + shortcode + '.txt')
-    # Remove from new_posts
+
+    # Remove from created_posts
     os.remove(img_path)
     os.remove(caption_path)
 
-    # Remove from shortcodes
+    # Remove from downloaded_posts.json
     data["shortcodes"] = [s for s in data["shortcodes"] if s != shortcode]
 
     # Save updated data
     with open("downloaded_posts.json", "w") as f:
         json.dump(data, f, indent=2)
 
+    print(f"Post {shortcode} uploaded to Instagram successfully.")
+
+
 cl = login_insta()
-schedule_post()
+upload_post()
