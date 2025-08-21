@@ -1,10 +1,11 @@
+# Python
 *venv*
 __pycache__
-615_import*
+.env
+
+# Project created directories and files
 downloaded_posts/
 downloaded_posts.json
-new_posts/
-scheduled_posts/
-tmp/
-.env
+created_posts/
 session.json
+logs/

@@ -1,6 +1,5 @@
 openai
 Pillow
-schedule
 instagrapi
 instaloader
 pytesseract
