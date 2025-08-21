@@ -1,11 +1,8 @@
-keras-ocr
-opencv-python
-Pillow
-instaloader
-tensorflow
-pytesseract
-psutil
 openai
+Pillow
+schedule
 instagrapi
+instaloader
+pytesseract
 python-dotenv
 browser-cookie3

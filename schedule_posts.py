@@ -71,5 +71,4 @@ def schedule_post():
         json.dump(data, f, indent=2)
 
 cl = login_insta()
-print("This is a test.")
-# schedule_post()
+schedule_post()
