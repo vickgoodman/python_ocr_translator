@@ -2,6 +2,7 @@
 import os
 import pytesseract
 from openai import OpenAI
+from dotenv import load_dotenv
 from config import DEVELOPER_PROMPT
 from PIL import Image, ImageDraw, ImageFont
 
@@ -43,9 +44,8 @@ def wrap_text(text, font, max_width, draw):
 
 
 def create_posts(downloaded_posts):
-    # Create new posts directory
-    NEW_POSTS_DIR = "new_posts"
-    os.makedirs(NEW_POSTS_DIR, exist_ok=True)
+    # Create "created_posts" directory
+    os.makedirs("created_posts", exist_ok=True)
 
     for post in downloaded_posts:
         print(f"Creating post for: {post['shortcode']}")
@@ -66,7 +66,9 @@ def create_posts(downloaded_posts):
         caption_prompt = "Traduce coerent in română:\" " + caption_text + "\". Nu tradu cuvintele care încep cu '#' și lasă-le neatinse."
 
         # Translate the post text and caption to a different language (coherently, with AI)
-        client = OpenAI()
+        load_dotenv()
+        api_key = os.getenv('OPENAI_API_KEY')
+        client = OpenAI(api_key=api_key)
 
         post_completion = client.chat.completions.create(
             model="gpt-4.1",
@@ -124,10 +126,15 @@ def create_posts(downloaded_posts):
 
         if is_mostly_black(image_path):
             # Save the post
-            img.save("new_posts/" + post['shortcode'] + '.png')
+            img.save("created_posts/" + post['shortcode'] + '.png')
             # Save caption
-            with open("new_posts/" + post['shortcode'] + '.txt', 'w') as f:
+            with open("created_posts/" + post['shortcode'] + '.txt', 'w') as f:
                 f.write(translated_caption_text)
+        else:
+            # Skip posts that are not mostly black
+            continue
 
         print(f"Created post for {post['shortcode']}")
         print("-" * 50)
+
+    print("All posts created successfully.")

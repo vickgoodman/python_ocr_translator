@@ -5,8 +5,8 @@ import time
 import random
 import instaloader
 from datetime import datetime
-from dotenv import load_dotenv
 from config import SOURCE_USERNAME, TARGET_USERNAME
+
 
 def download_posts():
     # Configuration
@@ -63,9 +63,14 @@ def download_posts():
     posts = profile.get_posts()
     new_posts = []
     download_count = 0
-    max_initial_posts = 5
+    max_initial_posts = 20
 
     for post in posts:
+        # Skip pinned posts
+        if post.shortcode in {'Cw0NYqcOekv', 'Cx77xPdON8I'}:
+            print(f"Skipping pinned post: {post.shortcode}")
+            continue
+
         # Skip if already downloaded
         if post.shortcode in downloaded_posts:
             if last_check:  # If not first run, stop when we hit old posts
