@@ -13,7 +13,6 @@ def login_insta():
     cl = Client()
     try:
         cl.load_settings("session.json")
-        print("Loaded existing session")
     except FileNotFoundError:
         print("No existing session found, logging in...")
 
