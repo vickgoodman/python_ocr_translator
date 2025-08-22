@@ -2,6 +2,7 @@
 
 import os
 import json
+from notify import notify
 from instagrapi import Client
 from dotenv import load_dotenv
 from config import SOURCE_USERNAME
@@ -78,6 +79,7 @@ def upload_post():
 
     print(f"Post {shortcode} uploaded to Instagram successfully.")
 
+    notify("New post uploaded.")
 
-cl = login_insta()
+
 upload_post()
