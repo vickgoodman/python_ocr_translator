@@ -13,4 +13,4 @@ if downloaded_posts:
 else:
     print("No new posts to create.")
 
-notify("Download and upload completed.")
+notify("Download and create completed.")

@@ -1,219 +1,77 @@
-# Instagram OCR Translator
+# Instagram OCR Translator 🤖📱
 
-An automated Python application that downloads Instagram posts, extracts text using OCR, translates content, and reposts with translated captions.
+> **Work in Progress** - Personal automation project
 
-## Features
+An Instagram bot that automatically downloads posts, extracts and translates text using OCR and AI, then reposts with translated content. Built with Python, OpenAI API, and automated deployment.
 
-- **Automated Post Download**: Downloads new posts from specified Instagram accounts
-- **OCR Text Extraction**: Uses Tesseract to extract text from images
-- **AI Translation**: Leverages OpenAI API for intelligent text translation
-- **Smart Filtering**: Skips carousel posts and videos
-- **Automated Scheduling**: Posts content 3-4 times daily with configurable intervals
-- **Session Management**: Maintains Instagram login sessions for reliability
-- **Comprehensive Logging**: Tracks all operations with timestamped logs
-- **Error Handling**: Robust error handling and retry mechanisms
+## 🎯 Project Status
 
-## Project Structure
+**🟢 Currently Live & Running**
 
-```
-python_ocr_translator/
-├── main.py                 # Main entry point
-├── download_posts.py       # Instagram post downloader
-├── create_posts.py         # OCR processing and translation
-├── upload_posts.py         # Post upload to Instagram
-├── upload.sh            	# Shell script for upload pipeline
-├── config.py               # Configuration settings
-├── main.sh                 # Shell script for main pipeline
-├── requirements.txt        # Python dependencies
-├── downloaded_posts/       # Raw downloaded images
-├── created_posts/          # Processed images with translations
-├── logs/                   # Application logs
-└── .env                    # Environment variables (not tracked)
-```
+- Bot is actively posting content
+- Follow the live project: [Instagram: @minte.motivata](https://instagram.com/minte.motivata)
+- Original page: [Instagram: @motivated.mindset](https://instagram.com/motivated.mindset)
+- 4 automated posts and 2 stories daily with smart scheduling
 
-## Prerequisites
+---
 
-- Python 3.8+
-- Tesseract OCR
-- Instagram account credentials
-- OpenAI API key
+## 🖼️ Project Showcase
 
-### Install Tesseract
+Here is the flow:
 
-**Ubuntu/Debian:**
+### 1. Download and create posts
 
-```bash
-sudo apt-get update
-sudo apt-get install tesseract-ocr
-```
+- Project downloads and creates posts everyday at **09:00AM** (Scheduled using _cron_ jobs)
+- A mobile notification is sent if the process is successful
 
-**macOS:**
+- **Original vs Created Post:**
 
-```bash
-brew install tesseract
-```
+![Original and Created Post](images/side-by-side-posts.png)
 
-## Installation
+### 2. Upload posts
 
-1. **Clone the repository:**
+- After creating the posts, the bot uploads 4 posts at randomized intervals (0-4 hours) to mimic human behavior
+- A mobile notification is sent for each time a post has been uploaded successfully
 
-```bash
-git clone https://github.com/vickgoodman/python_ocr_translator.git
-cd python_ocr_translator
-```
+## ✨ Other Features
 
-2. **Create virtual environment:**
+- **🎯 Content Filtering**: Skips carousels, videos, and low-quality images
+- **📊 Session Management**: Persistent Instagram authentication
+- **📈 Comprehensive Logging**: Detailed operation tracking and error handling
+- **🔄 Automated Deployment**: Shell scripts for seamless execution
 
-```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+### Libraries used
 
-3. **Install dependencies:**
+- **Instaloader** - Download posts from Instagram
+- **Instagrapi** - Instagram API integration (Used to upload posts)
+- **OpenAI API** - GPT-4 for intelligent translation
+- **Tesseract OCR** - Text extraction from images
+- **PIL (Pillow)** - Image processing and manipulation
 
-```bash
-pip install -r requirements.txt
-```
+## 🎯 Planned Improvements
 
-4. **Set up environment variables:**
-   Create a `.env` file with:
+- **Host Project:** Self-host project on a Raspberry Pi 5 so it's not on my laptop
+- **Enhanced OCR:** Implement better OCR engines for better accuracy
+- **Improved formatting:** Maintain text formatting from original image
+- **Add Multi-language Support** (Only supports Romanian for now)
+- **Dashboard:**: Add a monitoring interface
+- **Plug-and-play:** Make project easier to clone and play around with it
 
-```bash
-SOURCE_PASSWORD=your_instagram_password
-OPENAI_API_KEY=your_openai_api_key
-```
+## 📈 Impact & Results
 
-5. **Configure settings:**
-   Edit [`config.py`](config.py) with your Instagram usernames and preferences.
+- **Automated Workflow**: Reduced manual posting time by 100%
+- **Consistent Content**: 4 daily posts with zero downtime
+- **Quality Translation**: Professional-grade Romanian translations
+- **Engagement Growth**: Steady follower increase through consistent posting
 
-## Usage
+## 🤝 Contributing
 
-### Manual Execution
+This is a personal project showcasing automation and AI integration skills. Feel free to explore the code and suggest improvements!
 
-**Download and create posts pipeline:**
+<div align="center">
 
-```bash
-python3 main.sh
-```
+**⭐ Star this repository if you found it interesting!**
 
-**Upload a single post:**
+_This project demonstrates practical application of AI, automation, and full-stack development skills_
 
-```bash
-python3 upload.sh
-```
-
-## Configuration
-
-### [`config.py`](config.py)
-
-```python
-SOURCE_USERNAME = "your_source_account"
-TARGET_USERNAME = "account_to_download_from"
-```
-
-### Scheduling Times
-
-- **9:00**: Download and process new posts
-- **08:00-13:00, 13:00-18:00, 18:00-23:00**: Post content (at random 0 to 5 hour interval)
-
-## System Integration
-
-### Cronjob (Linux)
-
-```bash
-crontab -e
-```
-
-### Download and create posts every day at 09:00
-
-```bash
-0 9 * * * cd ~/path/to/project && ./main.sh
-```
-
-### Schedule posts
-
-```bash
-# 1st post: 08:00-13:00
-0 8 * * * cd ~/path/to/project && ./upload.sh
-```
-
-```bash
-# 2nd post: 13:00-18:00
-0 13 * * * cd ~/path/to/project && ./upload.sh
-```
-
-```bash
-# 3rd post: 18:00-23:00
-0 18 * * * cd ~/path/to/project && ./upload.sh
-```
-
-## Monitoring
-
-### View Logs
-
-```bash
-ls -la logs/main/
-ls -la logs/upload/
-```
-
-## Key Files
-
-- **[`downloaded_posts.json`](downloaded_posts.json)**: Tracks processed posts and metadata
-- **[`session.json`](session.json)**: Instagram session data (auto-generated)
-- **[`logs/`](logs/)**: All application logs organized by component
-
-## Error Handling
-
-The application includes comprehensive error handling for:
-
-- Network connectivity issues
-- Instagram API rate limits
-- OCR processing failures
-- OpenAI API errors
-- File system operations
-
-## Security
-
-- Environment variables for sensitive data
-- Session management for Instagram authentication
-- Automatic retry mechanisms for failed operations
-- Input validation and sanitization
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is for educational purposes. Ensure compliance with Instagram's Terms of Service and API usage policies.
-
-## Troubleshooting
-
-### Common Issues
-
-**"No existing session found"**
-
-- Delete [`session.json`](session.json) and restart to re-authenticate
-
-**OCR not working**
-
-- Verify Tesseract installation: `tesseract --version`
-- Check image quality and format
-
-**OpenAI API errors**
-
-- Verify API key in `.env` file
-- Check API quota and billing
-
-**Permission errors**
-
-- Ensure proper file permissions: `chmod +x main.sh`
-- Check directory write permissions
-
-### Getting Help
-
-For Instagram-related issues, refer to the [instaloader documentation](https://instaloader.github.io/).
+</div>
