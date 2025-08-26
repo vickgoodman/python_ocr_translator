@@ -11,7 +11,7 @@ An Instagram bot that automatically downloads posts, extracts and translates tex
 - Bot is actively posting content
 - Follow the live project: [Instagram: @minte.motivata](https://instagram.com/minte.motivata)
 - Original page: [Instagram: @motivated.mindset](https://instagram.com/motivated.mindset)
-- 4 automated posts and 2 stories daily with smart scheduling
+- 4 automated posts daily with smart scheduling
 
 ---
 

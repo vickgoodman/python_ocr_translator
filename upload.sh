@@ -1,9 +1,9 @@
 #!/bin/zsh
 # Script to run upload_post.py
 
-# Random sleep interval between 0 and 5 hours
+# Random sleep interval between 0 and 4 hours
 SECONDS=0
-sleep $(( $RANDOM % 18001 ))
+sleep $(( $RANDOM % 14401 ))
 
 # Create logs directory
 mkdir -p logs/upload
