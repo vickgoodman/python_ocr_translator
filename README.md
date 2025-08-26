@@ -42,8 +42,7 @@ Here is the flow:
 
 ### Libraries used
 
-- **Instaloader** - Download posts from Instagram
-- **Instagrapi** - Instagram API integration (Used to upload posts)
+- **Instaloader, Instagrapi** - Instagram API integration
 - **OpenAI API** - GPT-4 for intelligent translation
 - **Tesseract OCR** - Text extraction from images
 - **PIL (Pillow)** - Image processing and manipulation
